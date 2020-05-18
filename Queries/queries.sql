@@ -240,3 +240,76 @@ SELECT emp_no, first_name, last_name, dept_name
 INTO sales_dev_team
 FROM dept_info
 WHERE dept_name IN ('Sales', 'Development');
+
+--Deliverable 1: pt1 table containijg the number of emoloyees who are bout to retire grouped by job title
+SELECT e.emp_no, e.first_name, e.last_name, ti.title, s.from_date, s.salary
+INTO retire_emp
+FROM employees as e
+INNER JOIN salaries as s
+ON (e.emp_no = s.emp_no)
+INNER JOIN titles as ti
+ON (e.emp_no = ti.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31');
+
+-- Get a count of duplicates
+SELECT re.emp_no, COUNT(*)
+FROM retire_emp AS re
+GROUP BY re.emp_no
+HAVING COUNT(*) > 1;
+
+-- Partition the data to show only most recent title per employee
+SELECT emp_no, first_name, last_name, title, from_date, salary
+INTO recent_title_retire
+FROM
+ (SELECT re.emp_no,
+ re.first_name,
+ re.last_name,
+ re.title,
+ re.from_date, 
+ re.salary, ROW_NUMBER() OVER
+ (PARTITION BY (re.emp_no)
+ ORDER BY ti.to_date DESC) rn
+ FROM retire_emp AS re
+ INNER JOIN titles AS ti
+ ON (re.emp_no = ti.emp_no)
+ ) tmp WHERE rn = 1
+ORDER BY emp_no;
+
+--Check Deliverable 1 table
+SELECT * FROM recent_title_retire;
+
+--Number of titles retiring
+SELECT rtr.title, COUNT(rtr.emp_no) AS rt_count 
+INTO title_count
+FROM recent_title_retire as rtr
+GROUP BY title
+ORDER BY rt_count DESC;
+
+--Check table
+SELECT * FROM title_count;
+
+--Number of employees with each title
+
+--List of current employees born between Jan 1, 1952 and Dec 31, 1955
+SELECT e.emp_no, e.first_name, e.last_name
+INTO current_emp_birth
+FROM employees as e
+INNER JOIN titles as ti
+ON (e.emp_no = ti.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (ti.to_date = '9999-01-01');
+
+--Deliverable 2: Mentorship Eligibility
+SELECT e.emp_no, e.first_name, e.last_name, ti.title, ti.from_date, ti.to_date
+INTO mentor_elig
+FROM employees as e
+INNER JOIN titles as ti
+ON (e.emp_no = ti.emp_no)
+WHERE (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+	AND (ti.to_date = '9999-01-01');
+	
+--Check for dubplicates in deliverable 2
+SELECT me.emp_no, COUNT(*)
+FROM mentor_elig AS me
+GROUP BY me.emp_no
+HAVING COUNT(*) > 1;
