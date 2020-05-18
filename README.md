@@ -18,7 +18,8 @@ Table 2
 For the second deliverable we created a CSV file called mentor_elig, which is a list of all the employees eligible for the mentorship program. To do further analysis I create an overview of the total number of employees in each title that are eligible to become mentors. As we see from table 3 below Senior Staff has the most employees eligible for the program with 569 and Assistant Engineers have the least with only 29 employees eligible for the mentorship program. In total there are 1,549 eligible employees for the program. 
 
 Table 3
-1[](Data/Mentor_count.png)
+
+![](Data/Mentor_count.png)
 ## Additional Suggested Analysis
 An additional analysis that should be looked into is the amount of employees needed for each job title. This would allow us to figure out how many employees to hire after the employees in our "recent_title_retire.csv" retire. 
 
